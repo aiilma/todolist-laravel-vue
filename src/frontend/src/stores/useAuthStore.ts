@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
 import {useAxiosStore} from './useAxiosStore';
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {toast} from "vue3-toastify";
 import {useRouter} from "vue-router";
 
@@ -24,6 +24,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
     const register = async (credentials: any) => {
         try {
             await http.post('/auth/register', credentials);
+
             toast.success('Registration successful! Now use your data to login');
             router.push({name: 'LoginPage'});
         } catch (error) {
@@ -38,6 +39,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
             const response = await http.post('/auth/login', credentials);
 
             setToken(response.data.access_token);
+            await fetchUser();
 
             toast.success('Login successful!');
             router.push({name: 'TasksPage'});
@@ -74,12 +76,27 @@ export const useAuthStore = defineStore('AuthStore', () => {
         }
     };
 
+    const syncAuthUser = async () => {
+        if (token.value) {
+            try {
+                await fetchUser();
+            } catch (error) {
+                await logout();
+            }
+        }
+    };
+
+    onMounted(() => {
+        syncAuthUser();
+    });
+
     return {
         user,
         register,
         login,
         logout,
         fetchUser,
+        syncAuthUser,
         setToken,
         removeToken,
         token

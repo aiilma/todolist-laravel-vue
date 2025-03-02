@@ -1,12 +1,11 @@
 import type {AxiosInstance} from 'axios'
 import axios from "axios";
 import {ref} from "vue";
-import {defineStore, storeToRefs} from "pinia";
+import {defineStore} from "pinia";
 import {useAuthStore} from "./useAuthStore.ts";
 
 export const useAxiosStore = defineStore('AxiosStore', () => {
     const authStore = useAuthStore();
-    const {token} = storeToRefs(authStore)
 
     const axiosInstance = axios.create({
         baseURL: `http://127.0.0.1:8000/api`, // todo
@@ -14,6 +13,7 @@ export const useAxiosStore = defineStore('AxiosStore', () => {
     })
 
     axiosInstance.interceptors.request.use(config => {
+        const token = localStorage.getItem('token')
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -24,7 +24,8 @@ export const useAxiosStore = defineStore('AxiosStore', () => {
     axiosInstance.interceptors.response.use(
         response => response.data,
         async error => {
-            const tokenNotValid = error.response.status === 401 && token.value
+            const token = localStorage.getItem('token');
+            const tokenNotValid = error.response.status === 401 && token
 
             if (tokenNotValid) {
                 try {

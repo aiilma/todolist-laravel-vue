@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import {useAuthStore} from "./stores/useAuthStore.ts";
+
+useAuthStore();
 </script>
 
 <template>
