@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
         try {
             await http.post('/auth/register', credentials);
             toast.success('Registration successful! Now use your data to login');
-            // router.push({name: 'LoginPage'});
+            router.push({name: 'LoginPage'});
         } catch (error) {
             console.error('Registration failed:', error);
             toast.error('Registration failed!');
@@ -55,7 +55,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
             removeToken();
             user.value = null;
 
-            // router.push({name: 'LoginPage'});
+            router.push({name: 'LoginPage'});
         } catch (error) {
             console.error('Logout failed:', error);
             toast.error('Logout failed!');
