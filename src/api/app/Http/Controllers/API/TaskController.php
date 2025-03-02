@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\TaskStatus;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,10 +32,11 @@ class TaskController extends BaseController
      */
     public function store(Request $request): JsonResponse
     {
+        $taskStatuses = implode(',', array_column(TaskStatus::cases(), 'value'));
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:new,in_progress,completed',
+            'status' => 'required|in:' . $taskStatuses,
             'deadline' => 'nullable|date',
         ]);
 
