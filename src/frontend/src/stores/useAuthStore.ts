@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
         localStorage.removeItem('token');
     };
 
-    const register = async (credentials: any) => {
+    const register = async (credentials: any) => { // todo types for user creds
         try {
             await http.post('/auth/register', credentials);
 
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
         }
     };
 
-    const login = async (credentials: any) => {
+    const login = async (credentials: any) => { // todo types for user creds
         try {
             const response = await http.post('/auth/login', credentials);
 
