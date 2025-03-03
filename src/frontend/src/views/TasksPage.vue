@@ -10,7 +10,7 @@ import {useTaskStore} from "../stores/useTaskStore.ts";
 const taskStore = useTaskStore();
 
 const {totalTasksCount} = storeToRefs(taskStore);
-const showFilters = ref(false);
+const showFilters = ref(true);
 
 watch(totalTasksCount, (newCount) => showFilters.value = newCount > 0);
 onMounted(() => showFilters.value = totalTasksCount.value > 0);
