@@ -5,6 +5,11 @@ import {useTaskStore} from '../stores/useTaskStore';
 import UserLayout from "../components/layout/UserLayout.vue";
 import TasksLayout from "../components/layout/TasksLayout.vue";
 import type {Task} from "../types/task.ts";
+import SelectField from "../components/ui/SelectField.vue";
+import {TASK_STATUSES} from "../constants/tasks-constants.ts";
+import TextareaField from "../components/ui/TextareaField.vue";
+import InputField from "../components/ui/InputField.vue";
+import SubmitButton from "../components/ui/SubmitButton.vue";
 
 const router = useRouter();
 const taskStore = useTaskStore();
@@ -14,7 +19,7 @@ const props = defineProps<{ id: string }>();
 const task = ref<Partial<Task>>({
   title: '',
   description: '',
-  status: '',
+  status: undefined,
   deadline: ''
 });
 
@@ -39,30 +44,12 @@ onMounted(fetchTask);
   <UserLayout>
     <TasksLayout :title="'Edit Task ' + props.id">
       <form @submit.prevent="updateTask">
-        <div>
-          <label for="title">Title</label>
-          <input v-model="task.title" id="title" type="text" required />
-        </div>
-        <div>
-          <label for="description">Description</label>
-          <textarea v-model="task.description" id="description"></textarea>
-        </div>
-        <div>
-          <label for="status">Status</label>
-          <select v-model="task.status" id="status" required>
-            <option value="new">New</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
-        <div>
-          <label for="deadline">Deadline</label>
-          <input v-model="task.deadline" id="deadline" type="date" />
-        </div>
+        <InputField v-model="task.title" type="text" placeholder="Title"/>
+        <TextareaField v-model="task.description" placeholder="Description"/>
+        <SelectField v-model="task.status" :options="TASK_STATUSES" placeholder="Select Status"/>
+        <InputField v-model="task.deadline" type="date" placeholder="Deadline"/>
         <div class="flex justify-end">
-          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
-            Update Task
-          </button>
+          <SubmitButton label="Update Task"/>
         </div>
       </form>
     </TasksLayout>
