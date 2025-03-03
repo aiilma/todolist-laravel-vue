@@ -24,6 +24,11 @@ const goBack = () => {
             Back
           </button>
         </div>
+        <div class="flex justify-end" v-if="route.name !== 'CreateTaskPage' && route.name !== 'EditTaskPage'">
+          <router-link to="/create" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
+            Create Task
+          </router-link>
+        </div>
         <slot name="extra"></slot>
       </div>
       <slot></slot>
