@@ -18,6 +18,37 @@ export const useTaskStore = defineStore('TaskStore', () => {
         }
     };
 
+    const fetchTask = async (id: string) => {
+        try {
+            const response = await http.get(`/tasks/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch task:', error);
+            throw error;
+        }
+    };
+
+    const createTask = async (task: Partial<Task>) => {
+        try {
+            const response = await http.post('/tasks', task);
+            tasks.value.push(response.data);
+        } catch (error) {
+            console.error('Failed to create task:', error);
+        }
+    };
+
+    const updateTask = async (id: string, updatedTask: Partial<Task>) => {
+        try {
+            const response = await http.put(`/tasks/${id}`, updatedTask);
+            const index = tasks.value.findIndex((task: Task) => task.id === +id);
+            if (index !== -1) {
+                tasks.value[index] = response.data;
+            }
+        } catch (error) {
+            console.error('Failed to update task:', error);
+        }
+    };
+
     const deleteTask = async (id: number) => {
         try {
             await http.delete(`/tasks/${id}`);
@@ -32,6 +63,9 @@ export const useTaskStore = defineStore('TaskStore', () => {
         tasks,
         totalTasksCount,
         fetchTasks,
+        fetchTask,
+        createTask,
+        updateTask,
         deleteTask
     };
 });

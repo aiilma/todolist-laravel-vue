@@ -1,8 +1,10 @@
 import {createRouter, createWebHistory} from "vue-router";
+import {useAuthStore} from "../stores/useAuthStore.ts";
 import TasksPage from "../views/TasksPage.vue";
 import RegisterPage from "../views/RegisterPage.vue";
 import LoginPage from "../views/LoginPage.vue";
-import {useAuthStore} from "../stores/useAuthStore.ts";
+import CreateTaskPage from "../views/CreateTaskPage.vue";
+import EditTaskPage from "../views/EditTaskPage.vue";
 
 const routes = [
     {
@@ -10,6 +12,19 @@ const routes = [
         name: 'TasksPage',
         component: TasksPage,
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/create',
+        name: 'CreateTaskPage',
+        component: CreateTaskPage,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/:id/edit',
+        name: 'EditTaskPage',
+        component: EditTaskPage,
+        meta: { requiresAuth: true },
+        props: true
     },
     {
         path: '/register',
