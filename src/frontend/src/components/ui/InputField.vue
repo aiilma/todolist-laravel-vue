@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import {defineProps, defineEmits} from 'vue';
+import {defineProps, defineEmits, withDefaults} from 'vue';
 
-const props = defineProps<{
+withDefaults(defineProps<{
   modelValue: string | null | undefined;
   type: string | undefined;
   placeholder: string;
-}>();
+  disabled?: boolean;
+  required?: boolean;
+}>(), {
+  disabled: false,
+  required: false,
+  type: 'text',
+  modelValue: '',
+});
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -16,8 +23,18 @@ const updateValue = (event: Event) => {
 
 <template>
   <div class="mb-4">
-    <input :type="props.type ?? 'text'" :placeholder="props.placeholder" :value="props.modelValue ?? ''" @input="updateValue" required
-           class="w-full p-2 border border-gray-300 rounded"/>
+    <input
+        :type="type"
+        :placeholder="placeholder"
+        :value="modelValue"
+        @input="updateValue"
+        :disabled="disabled"
+        :required="required"
+        :class="{
+          'w-full p-2 border border-gray-300 rounded': true,
+          'bg-gray-200 text-gray-500 cursor-not-allowed': disabled
+        }"
+    />
   </div>
 </template>
 

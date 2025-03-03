@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import {defineProps, defineEmits} from 'vue';
+import {defineProps, defineEmits, withDefaults} from 'vue';
 
-const props = defineProps<{
+withDefaults(defineProps<{
   modelValue: string | undefined;
   options: string[];
   placeholder: string;
-}>();
+  disabled?: boolean;
+}>(), {
+  disabled: false,
+  modelValue: '',
+});
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -16,9 +20,18 @@ const updateValue = (event: Event) => {
 
 <template>
   <div class="mb-4">
-    <select :value="modelValue ?? ''" @input="updateValue" required class="w-full p-2 border border-gray-300 rounded">
+    <select
+        :value="modelValue"
+        @input="updateValue"
+        required
+        :class="{
+          'w-full p-2 border border-gray-300 rounded': true,
+          'bg-gray-200 text-gray-500 cursor-not-allowed': disabled
+        }"
+        :disabled="disabled"
+    >
       <option disabled value="">{{ placeholder }}</option>
-      <option v-for="option in props.options" :key="option" :value="option">{{ option }}</option>
+      <option v-for="option in options" :key="option" :value="option">{{ option }}</option>
     </select>
   </div>
 </template>

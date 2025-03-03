@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import {defineProps, defineEmits} from 'vue';
+import {defineProps, defineEmits, withDefaults} from 'vue';
 
-defineProps({
-  label: String,
+withDefaults(defineProps<{
+  disabled?: boolean;
+  label: string;
+}>(), {
+  disabled: false,
+  label: '',
 });
 
 const emit = defineEmits(['click']);
@@ -13,8 +17,16 @@ const handleClick = () => {
 </script>
 
 <template>
-  <button type="submit" @click="handleClick"
-          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
+  <button
+      type="submit"
+      @click="handleClick"
+      class="py-2 px-4 rounded transition"
+      :class="{
+        'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer': !disabled,
+        'bg-gray-400 text-gray-700 cursor-not-allowed': disabled
+      }"
+      :disabled="disabled"
+  >
     {{ label }}
   </button>
 </template>
