@@ -8,6 +8,16 @@ export const useTaskStore = defineStore('TaskStore', () => {
     const tasks = ref<Task[]>([]);
     const totalTasksCount = ref<number>(0);
 
+    const fetchTasks = async (params = {}) => {
+        try {
+            const response = await http.get('/tasks', { params });
+            tasks.value = response.data.tasks;
+            totalTasksCount.value = response.data.total_tasks_count;
+        } catch (error) {
+            console.error('Failed to fetch tasks:', error);
+        }
+    };
+
     const deleteTask = async (id: number) => {
         try {
             await http.delete(`/tasks/${id}`);
@@ -21,6 +31,7 @@ export const useTaskStore = defineStore('TaskStore', () => {
     return {
         tasks,
         totalTasksCount,
+        fetchTasks,
         deleteTask
     };
 });
