@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    volumes:
+      - ./src/api:/var/www/html
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+    user: "${UID}:${GID}"
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - "${FWD_NGINX_PORT:-80}:80"
+    volumes:
+      - ./src/api:/var/www/html
+      - ./docker/nginx/conf:/etc/nginx/conf.d
+    depends_on:
+      - php
+      - db
+    networks:
+      - app-network
+
+
+  db:
+    image: postgres:16.2
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "${FWD_DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./src/frontend:/app
+    ports:
+      - "${FWD_FRONTEND_PORT:-8080}:3000"
+    environment:
+      - VITE_BACKEND_URL=${BACKEND_URL}
+    command: [ "sh", "-c", "npm install && npm run dev" ]
+    depends_on:
+      - nginx
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
