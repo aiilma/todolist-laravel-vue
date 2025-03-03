@@ -8,9 +8,9 @@ export const useAxiosStore = defineStore('AxiosStore', () => {
     const authStore = useAuthStore();
 
     const axiosInstance = axios.create({
-        baseURL: `http://127.0.0.1:8000/api`, // todo
-        headers: {'Content-Type': 'application/json'}
-    })
+        baseURL: `${import.meta.env.VITE_BACKEND_URL}/api` || 'http://127.0.0.1:8000/api',
+        headers: { 'Content-Type': 'application/json' }
+    });
 
     axiosInstance.interceptors.request.use(config => {
         const token = localStorage.getItem('token')
