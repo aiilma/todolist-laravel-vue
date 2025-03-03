@@ -15,6 +15,10 @@ class TaskController extends BaseController
      */
     public function index(Request $request): JsonResponse
     {
+        $userId = Auth::id();
+
+        $totalTasksCount = Task::where('user_id', $userId)->count();
+
         $tasks = Task::where('user_id', Auth::id())
             ->when($request->status, function ($query) use ($request) {
                 $query->where('status', $request->status);
@@ -24,7 +28,10 @@ class TaskController extends BaseController
             })
             ->get();
 
-        return $this->sendResponse($tasks);
+        return $this->sendResponse([
+            'total_tasks_count' => $totalTasksCount,
+            'tasks' => $tasks,
+        ]);
     }
 
     /**
@@ -57,6 +64,7 @@ class TaskController extends BaseController
     public function show(string $id): JsonResponse
     {
         $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        $task->makeHidden('id');
         return $this->sendResponse($task);
     }
 
