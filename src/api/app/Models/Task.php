@@ -15,6 +15,10 @@ class Task extends Model
         'title', 'description', 'status', 'deadline', 'user_id'
     ];
 
+    protected $hidden = [
+        'user_id'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
