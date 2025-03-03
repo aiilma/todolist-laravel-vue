@@ -20,7 +20,7 @@ const goBack = () => {
       <h1 class="text-2xl font-bold mb-6 text-primary">{{ title }}</h1>
       <div class="mb-6 p-4 bg-gray-100 rounded shadow">
         <div class="flex justify-between" v-if="route.name !== 'TasksPage'">
-          <button @click="goBack" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition">
+          <button @click="goBack" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition cursor-pointer">
             Back
           </button>
         </div>

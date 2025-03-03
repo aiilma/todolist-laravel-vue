@@ -11,7 +11,7 @@ const handleLogout = async () => {
 <template>
   <div class="min-h-screen flex flex-col">
     <header class="bg-white shadow p-4 flex justify-between items-center">
-      <button @click="handleLogout" class="bg-red-500 text-white px-4 py-2 rounded ml-auto">
+      <button @click="handleLogout" class="bg-red-500 text-white px-4 py-2 rounded ml-auto cursor-pointer">
         Logout
       </button>
     </header>
