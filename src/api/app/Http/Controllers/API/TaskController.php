@@ -16,17 +16,17 @@ class TaskController extends BaseController
     public function index(Request $request): JsonResponse
     {
         $userId = Auth::id();
-
         $totalTasksCount = Task::where('user_id', $userId)->count();
+        $query = Task::where('user_id', $userId);
 
-        $tasks = Task::where('user_id', Auth::id())
-            ->when($request->status, function ($query) use ($request) {
-                $query->where('status', $request->status);
-            })
-            ->when($request->deadline, function ($query) use ($request) {
-                $query->where('deadline', '<=', $request->deadline);
-            })
-            ->get();
+        foreach ([
+            new \App\Filters\StatusFilter(),
+            new \App\Filters\DeadlineFilter(),
+                     ] as $filter) {
+            $query = $filter->apply($query, $request);
+        }
+
+        $tasks = $query->get();
 
         return $this->sendResponse([
             'total_tasks_count' => $totalTasksCount,
