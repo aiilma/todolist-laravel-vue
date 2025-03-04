@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
-use App\Models\Task;
+use App\Repositories\TaskRepository;
 use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,10 +13,12 @@ use Illuminate\Support\Facades\Auth;
 class TaskController extends BaseController
 {
     protected TaskService $taskService;
+    protected TaskRepository $taskRepository;
 
-    public function __construct(TaskService $taskService)
+    public function __construct(TaskService $taskService, TaskRepository $taskRepository)
     {
         $this->taskService = $taskService;
+        $this->taskRepository = $taskRepository;
     }
 
     /**
@@ -49,7 +51,7 @@ class TaskController extends BaseController
      */
     public function show(string $id): JsonResponse
     {
-        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        $task = $this->taskRepository->findByIdAndUserId($id, Auth::id());
         if (!$task) {
             return $this->sendError('Task not found.', 404);
         }
@@ -63,7 +65,7 @@ class TaskController extends BaseController
      */
     public function update(UpdateTaskRequest $request, string $id): JsonResponse
     {
-        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        $task = $this->taskRepository->findByIdAndUserId($id, Auth::id());
         if (!$task) {
             return $this->sendError('Task not found.', 404);
         }
@@ -78,7 +80,7 @@ class TaskController extends BaseController
      */
     public function destroy(string $id): JsonResponse
     {
-        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        $task = $this->taskRepository->findByIdAndUserId($id, Auth::id());
         if (!$task) {
             return $this->sendError('Task not found.', 404);
         }
