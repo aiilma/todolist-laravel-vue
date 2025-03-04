@@ -28,7 +28,7 @@ const formDisabled = ref(false);
 const fetchTask = async () => {
   formDisabled.value = true;
   try {
-    const fetchedTask = await taskStore.fetchTask(props.id);
+    const fetchedTask = await taskStore.fetchTask(+props.id);
     task.value = { ...fetchedTask };
   } catch (error) {
     toast.error('Failed to fetch task!');
@@ -41,7 +41,7 @@ const fetchTask = async () => {
 const updateTask = async () => {
   formDisabled.value = true;
   try {
-    await taskStore.updateTask(props.id, task.value);
+    await taskStore.updateTask(+props.id, task.value);
     router.push('/');
   } catch (error) {
     console.error('Failed to update task:', error);
