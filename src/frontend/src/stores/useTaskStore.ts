@@ -3,6 +3,7 @@ import {ref} from 'vue';
 import {useAxiosStore} from './useAxiosStore';
 import type {Task} from "../types/task.ts";
 import type {TasksResponse} from "../types/api.ts";
+import type {Id} from "../types/basic.ts";
 
 export const useTaskStore = defineStore('TaskStore', () => {
     const {http} = useAxiosStore();
@@ -19,7 +20,7 @@ export const useTaskStore = defineStore('TaskStore', () => {
         }
     };
 
-    const fetchTask = async (id: string) => {
+    const fetchTask = async (id: Id) => {
         try {
             const response = await http.get<Task>(`/tasks/${id}`);
             return response.data;
@@ -38,10 +39,10 @@ export const useTaskStore = defineStore('TaskStore', () => {
         }
     };
 
-    const updateTask = async (id: string, updatedTask: Partial<Task>) => {
+    const updateTask = async (id: Id, updatedTask: Partial<Task>) => {
         try {
             const response = await http.put<Task>(`/tasks/${id}`, updatedTask);
-            const index = tasks.value.findIndex((task: Task) => task.id === +id);
+            const index = tasks.value.findIndex((task: Task) => task.id === id);
             if (index !== -1) {
                 tasks.value[index] = response.data;
             }
@@ -50,7 +51,7 @@ export const useTaskStore = defineStore('TaskStore', () => {
         }
     };
 
-    const deleteTask = async (id: number) => {
+    const deleteTask = async (id: Id) => {
         try {
             await http.delete(`/tasks/${id}`);
             tasks.value = tasks.value.filter((task: Task) => task.id !== id);

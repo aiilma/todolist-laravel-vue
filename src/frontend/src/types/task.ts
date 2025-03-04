@@ -1,7 +1,11 @@
+import type {Id, Nullable} from "./basic.ts";
+
+export type TaskStatus = 'new' | 'in_progress' | 'completed'
+
 export interface Task {
-    id: number;
+    id: Id;
     title: string;
-    description?: string | null;
-    status: 'new' | 'in_progress' | 'completed';
-    deadline?: string | null;
+    description?: Nullable<string>;
+    status: TaskStatus;
+    deadline?: Nullable<string>;
 }

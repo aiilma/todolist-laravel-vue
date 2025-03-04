@@ -4,6 +4,7 @@ import {PencilIcon, TrashIcon} from '@heroicons/vue/24/outline';
 import {useTaskStore} from "../stores/useTaskStore.ts";
 import type {Task} from "../types/task.ts";
 import {toast} from "vue3-toastify";
+import type {Id} from "../types/basic.ts";
 
 defineProps<{
   task: Task;
@@ -12,7 +13,7 @@ defineProps<{
 const taskStore = useTaskStore();
 const isDeleting = ref(false);
 
-const deleteTask = async (id: number) => {
+const deleteTask = async (id: Id) => {
   isDeleting.value = true;
   try {
     await taskStore.deleteTask(id);
