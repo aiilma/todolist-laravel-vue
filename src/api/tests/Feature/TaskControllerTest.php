@@ -35,6 +35,30 @@ class TaskControllerTest extends TestCase
             ]);
     }
 
+    public function testIndexWithStatusFilter()
+    {
+        Task::factory()->create(['user_id' => $this->user->id, 'status' => \App\Enums\TaskStatus::NEW->value]);
+        Task::factory()->create(['user_id' => $this->user->id, 'status' => \App\Enums\TaskStatus::COMPLETED->value]);
+
+        $response = $this->getJson('/api/tasks?status=' . \App\Enums\TaskStatus::NEW->value);
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data.tasks')
+            ->assertJsonFragment(['status' => \App\Enums\TaskStatus::NEW->value]);
+    }
+
+    public function testIndexWithDeadlineFilter()
+    {
+        Task::factory()->create(['user_id' => $this->user->id, 'deadline' => now()->addDays(1)]);
+        Task::factory()->create(['user_id' => $this->user->id, 'deadline' => now()->addDays(10)]);
+
+        $response = $this->getJson('/api/tasks?deadline=' . now()->addDays(5)->toDateString());
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data.tasks')
+            ->assertJsonFragment(['deadline' => now()->addDays(1)->format('Y-m-d H:i:s')]);
+    }
+
     public function testStore()
     {
         $taskData = [
