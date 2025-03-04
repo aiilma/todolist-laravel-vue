@@ -11,6 +11,7 @@ import TextareaField from "../components/ui/TextareaField.vue";
 import InputField from "../components/ui/InputField.vue";
 import SubmitButton from "../components/ui/SubmitButton.vue";
 import {toast} from "vue3-toastify";
+import {taskStatusRenderer} from "../utils/task-status-renderer.ts";
 
 const router = useRouter();
 const taskStore = useTaskStore();
@@ -24,6 +25,11 @@ const task = ref<Partial<Task>>({
   deadline: ''
 });
 const formDisabled = ref(false);
+
+const taskStatusesOptions = TASK_STATUSES.map(status => ({
+  value: status,
+  label: taskStatusRenderer(status)
+}));
 
 const fetchTask = async () => {
   formDisabled.value = true;
@@ -60,7 +66,7 @@ onMounted(fetchTask);
       <form @submit.prevent="updateTask">
         <InputField v-model="task.title" type="text" placeholder="Title" :disabled="formDisabled" required/>
         <TextareaField v-model="task.description" placeholder="Description" :disabled="formDisabled"/>
-        <SelectField v-model="task.status" :options="TASK_STATUSES" placeholder="Select Status" :disabled="formDisabled"/>
+        <SelectField v-model="task.status" :options="taskStatusesOptions" placeholder="Select Status" :disabled="formDisabled"/>
         <InputField v-model="task.deadline" type="date" placeholder="Deadline" :disabled="formDisabled"/>
         <div class="flex justify-end">
           <SubmitButton label="Update Task" :disabled="formDisabled"/>

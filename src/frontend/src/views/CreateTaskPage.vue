@@ -11,6 +11,7 @@ import SelectField from "../components/ui/SelectField.vue";
 import SubmitButton from "../components/ui/SubmitButton.vue";
 import {TASK_STATUSES} from "../constants/tasks-constants.ts";
 import {toast} from "vue3-toastify";
+import {taskStatusRenderer} from "../utils/task-status-renderer.ts";
 
 const taskStore = useTaskStore();
 const router = useRouter();
@@ -20,6 +21,11 @@ const description = ref('');
 const status = ref<Task["status"]>('new');
 const deadline = ref('');
 const formDisabled = ref(false);
+
+const taskStatusesOptions = TASK_STATUSES.map(status => ({
+  value: status,
+  label: taskStatusRenderer(status)
+}));
 
 const createTask = async () => {
   formDisabled.value = true;
@@ -46,7 +52,7 @@ const createTask = async () => {
       <form @submit.prevent="createTask">
         <InputField v-model="title" type="text" placeholder="Title" :disabled="formDisabled" required/>
         <TextareaField v-model="description" placeholder="Description" :disabled="formDisabled"/>
-        <SelectField v-model="status" :options="TASK_STATUSES" placeholder="Select Status" :disabled="formDisabled"/>
+        <SelectField v-model="status" :options="taskStatusesOptions" placeholder="Select Status" :disabled="formDisabled"/>
         <InputField v-model="deadline" type="date" placeholder="Deadline" :disabled="formDisabled"/>
         <div class="flex justify-end">
           <SubmitButton :label="'Create Task'" :disabled="formDisabled"/>

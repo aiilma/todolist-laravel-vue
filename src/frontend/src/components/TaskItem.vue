@@ -5,6 +5,7 @@ import {useTaskStore} from "../stores/useTaskStore.ts";
 import type {Task} from "../types/task.ts";
 import {toast} from "vue3-toastify";
 import type {Id} from "../types/basic.ts";
+import {taskStatusRenderer} from "../utils/task-status-renderer.ts";
 
 defineProps<{
   task: Task;
@@ -33,7 +34,7 @@ const deleteTask = async (id: Id) => {
       <div>
         <h2 class="text-xl font-semibold">{{ task.title }}</h2>
         <p>{{ task.description }}</p>
-        <p>Status: {{ task.status }}</p>
+        <p>Status: {{ taskStatusRenderer(task.status) }}</p>
         <p v-if="task.deadline">Deadline: {{ task.deadline }}</p>
       </div>
     </div>
