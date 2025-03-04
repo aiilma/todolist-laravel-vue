@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {defineProps, ref} from "vue";
+import {ref} from "vue";
 import {PencilIcon, TrashIcon} from '@heroicons/vue/24/outline';
 import {useTaskStore} from "../stores/useTaskStore.ts";
 import type {Task} from "../types/task.ts";
