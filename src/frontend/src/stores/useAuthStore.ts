@@ -3,13 +3,14 @@ import {useAxiosStore} from './useAxiosStore';
 import {onMounted, ref} from 'vue';
 import {toast} from "vue3-toastify";
 import {useRouter} from "vue-router";
+import type {Nullable} from "../types/basic.ts";
 
 export const useAuthStore = defineStore('AuthStore', () => {
     const router = useRouter();
     const {http} = useAxiosStore();
 
     const user = ref(null);
-    const token = ref<string | null>(localStorage.getItem('token'));
+    const token = ref<Nullable<string>>(localStorage.getItem('token'));
 
     const setToken = (newToken: string) => {
         token.value = newToken;

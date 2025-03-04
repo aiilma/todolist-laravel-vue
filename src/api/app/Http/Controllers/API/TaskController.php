@@ -2,58 +2,46 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\TaskStatus;
-use App\Models\Task;
+use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Requests\Task\UpdateTaskRequest;
+use App\Repositories\TaskRepository;
+use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends BaseController
 {
+    protected TaskService $taskService;
+    protected TaskRepository $taskRepository;
+
+    public function __construct(TaskService $taskService, TaskRepository $taskRepository)
+    {
+        $this->taskService = $taskService;
+        $this->taskRepository = $taskRepository;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request): JsonResponse
     {
-        $userId = Auth::id();
-        $totalTasksCount = Task::where('user_id', $userId)->count();
-        $query = Task::where('user_id', $userId);
-
-        foreach ([
+        $filters = [
             new \App\Filters\StatusFilter(),
             new \App\Filters\DeadlineFilter(),
-                     ] as $filter) {
-            $query = $filter->apply($query, $request);
-        }
+        ];
 
-        $tasks = $query->get();
+        $tasksData = $this->taskService->getAllTasks($filters, $request);
 
-        return $this->sendResponse([
-            'total_tasks_count' => $totalTasksCount,
-            'tasks' => $tasks,
-        ]);
+        return $this->sendResponse($tasksData);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreTaskRequest $request): JsonResponse
     {
-        $taskStatuses = implode(',', array_column(TaskStatus::cases(), 'value'));
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:' . $taskStatuses,
-            'deadline' => 'nullable|date',
-        ]);
-
-        $task = Task::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'status' => $request->status,
-            'deadline' => $request->deadline,
-            'user_id' => Auth::id(),
-        ]);
+        $task = $this->taskService->createTask($request->validated());
 
         return $this->sendResponse($task, 'Task created successfully.', 201);
     }
@@ -63,7 +51,11 @@ class TaskController extends BaseController
      */
     public function show(string $id): JsonResponse
     {
-        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        $task = $this->taskRepository->findByIdAndUserId($id, Auth::id());
+        if (!$task) {
+            return $this->sendError('Task not found.', 404);
+        }
+
         $task->makeHidden('id');
         return $this->sendResponse($task);
     }
@@ -71,18 +63,14 @@ class TaskController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateTaskRequest $request, string $id): JsonResponse
     {
-        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+        $task = $this->taskRepository->findByIdAndUserId($id, Auth::id());
+        if (!$task) {
+            return $this->sendError('Task not found.', 404);
+        }
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:new,in_progress,completed',
-            'deadline' => 'nullable|date',
-        ]);
-
-        $task->update($request->all());
+        $task = $this->taskService->updateTask($task, $request->validated());
 
         return $this->sendResponse($task);
     }
@@ -92,8 +80,12 @@ class TaskController extends BaseController
      */
     public function destroy(string $id): JsonResponse
     {
-        $task = Task::where('user_id', Auth::id())->findOrFail($id);
-        $task->delete();
+        $task = $this->taskRepository->findByIdAndUserId($id, Auth::id());
+        if (!$task) {
+            return $this->sendError('Task not found.', 404);
+        }
+
+        $this->taskService->deleteTask($task);
 
         return $this->sendResponse(null, 'Task deleted successfully.', 204);
     }

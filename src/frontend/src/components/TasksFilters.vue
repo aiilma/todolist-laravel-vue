@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
+import type {Nullable} from "../types/basic.ts";
+import type {TaskStatus} from "../types/task.ts";
 
-const statusFilter = ref<string | null>('All');
-const deadlineFilter = ref<string | null>(null);
+const statusFilter = ref<TaskStatus | 'All'>('All');
+const deadlineFilter = ref<Nullable<string>>(null);
 
 const route = useRoute();
 const router = useRouter();
@@ -30,7 +32,7 @@ watch([statusFilter, deadlineFilter], updateFilters);
 
 onMounted(() => {
   if (route.query.status) {
-    statusFilter.value = route.query.status as string;
+    statusFilter.value = route.query.status as TaskStatus;
   }
   if (route.query.deadline) {
     deadlineFilter.value = route.query.deadline as string;

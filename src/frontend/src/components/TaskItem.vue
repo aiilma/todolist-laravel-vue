@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import {defineProps, ref} from "vue";
+import {ref} from "vue";
 import {PencilIcon, TrashIcon} from '@heroicons/vue/24/outline';
 import {useTaskStore} from "../stores/useTaskStore.ts";
 import type {Task} from "../types/task.ts";
 import {toast} from "vue3-toastify";
+import type {Id} from "../types/basic.ts";
+import {taskStatusRenderer} from "../utils/task-status-renderer.ts";
 
 defineProps<{
   task: Task;
@@ -12,7 +14,7 @@ defineProps<{
 const taskStore = useTaskStore();
 const isDeleting = ref(false);
 
-const deleteTask = async (id: number) => {
+const deleteTask = async (id: Id) => {
   isDeleting.value = true;
   try {
     await taskStore.deleteTask(id);
@@ -32,7 +34,7 @@ const deleteTask = async (id: number) => {
       <div>
         <h2 class="text-xl font-semibold">{{ task.title }}</h2>
         <p>{{ task.description }}</p>
-        <p>Status: {{ task.status }}</p>
+        <p>Status: {{ taskStatusRenderer(task.status) }}</p>
         <p v-if="task.deadline">Deadline: {{ task.deadline }}</p>
       </div>
     </div>

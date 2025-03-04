@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --build --force && npm run clean",
+    "clean": "npx rimraf dist"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",

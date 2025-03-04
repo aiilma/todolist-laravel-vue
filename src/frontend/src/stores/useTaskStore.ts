@@ -2,6 +2,8 @@ import {defineStore} from 'pinia';
 import {ref} from 'vue';
 import {useAxiosStore} from './useAxiosStore';
 import type {Task} from "../types/task.ts";
+import type {TasksResponse} from "../types/api.ts";
+import type {Id} from "../types/basic.ts";
 
 export const useTaskStore = defineStore('TaskStore', () => {
     const {http} = useAxiosStore();
@@ -10,7 +12,7 @@ export const useTaskStore = defineStore('TaskStore', () => {
 
     const fetchTasks = async (params = {}) => {
         try {
-            const response = await http.get('/tasks', { params });
+            const response = await http.get<TasksResponse>('/tasks', { params });
             tasks.value = response.data.tasks;
             totalTasksCount.value = response.data.total_tasks_count;
         } catch (error) {
@@ -18,9 +20,9 @@ export const useTaskStore = defineStore('TaskStore', () => {
         }
     };
 
-    const fetchTask = async (id: string) => {
+    const fetchTask = async (id: Id) => {
         try {
-            const response = await http.get(`/tasks/${id}`);
+            const response = await http.get<Task>(`/tasks/${id}`);
             return response.data;
         } catch (error) {
             console.error('Failed to fetch task:', error);
@@ -30,17 +32,17 @@ export const useTaskStore = defineStore('TaskStore', () => {
 
     const createTask = async (task: Partial<Task>) => {
         try {
-            const response = await http.post('/tasks', task);
+            const response = await http.post<Task>('/tasks', task);
             tasks.value.push(response.data);
         } catch (error) {
             console.error('Failed to create task:', error);
         }
     };
 
-    const updateTask = async (id: string, updatedTask: Partial<Task>) => {
+    const updateTask = async (id: Id, updatedTask: Partial<Task>) => {
         try {
-            const response = await http.put(`/tasks/${id}`, updatedTask);
-            const index = tasks.value.findIndex((task: Task) => task.id === +id);
+            const response = await http.put<Task>(`/tasks/${id}`, updatedTask);
+            const index = tasks.value.findIndex((task: Task) => task.id === id);
             if (index !== -1) {
                 tasks.value[index] = response.data;
             }
@@ -49,7 +51,7 @@ export const useTaskStore = defineStore('TaskStore', () => {
         }
     };
 
-    const deleteTask = async (id: number) => {
+    const deleteTask = async (id: Id) => {
         try {
             await http.delete(`/tasks/${id}`);
             tasks.value = tasks.value.filter((task: Task) => task.id !== id);

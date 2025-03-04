@@ -1,1 +1,3 @@
-export const TASK_STATUSES = ['new', 'in_progress', 'completed'];
+import type {TaskStatus} from "../types/task.ts";
+
+export const TASK_STATUSES: TaskStatus[] = ['new', 'in_progress', 'completed'];

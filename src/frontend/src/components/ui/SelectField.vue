@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import {defineProps, defineEmits, withDefaults} from 'vue';
 
 withDefaults(defineProps<{
   modelValue: string | undefined;
-  options: string[];
+  options: { value: string; label: string }[];
   placeholder: string;
   disabled?: boolean;
 }>(), {
@@ -31,7 +30,7 @@ const updateValue = (event: Event) => {
         :disabled="disabled"
     >
       <option disabled value="">{{ placeholder }}</option>
-      <option v-for="option in options" :key="option" :value="option">{{ option }}</option>
+      <option v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</option>
     </select>
   </div>
 </template>
